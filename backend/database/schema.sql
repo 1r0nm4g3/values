@@ -1,0 +1,125 @@
+CREATE TABLE IF NOT EXISTS journal_prompts (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	question TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS journal_reponses (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_id INTEGER,
+	answer TEXT
+);
+
+CREATE TABLE IF NOT EXISTS values_generic (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT,
+	description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS users (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT,
+	email TEXT,
+	password TEXT,
+	isLoser Bool DEFAULT True
+)
+
+CREATE TABLE IF NOT EXISTS user_values_generic (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	FOREIGN KEY (value_generic_id) REFERENCES values_generic(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	FOREIGN KEY (user_id) REFERENCES users(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS user_values_generic_clusters (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	FOREIGN KEY (user_id) REFERENCES users(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	cluster_number INTEGER,
+	FOREIGN KEY (value_generic_id) REFERENCES values_generic(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+);
+
+CREATE TABLE IF NOT EXISTS values (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	FOREIGN KEY (user_id) REFERENCES users(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	FOREIGN KEY (cluser_id) REFERENCES user_values_generic_clusters(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	definition TEXT,
+	examples TEXT,
+	neglect TEXT,
+	behaviors TEXT,
+	important TEXT,
+	rank INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS mission_statement (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	FOREIGN KEY (user_id) REFERENCES users(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	mission_statement TEXT
+);
+
+CREATE TABLE IF NOT EXISTS goals (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	FOREIGN KEY (user_id) REFERENCES users(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	title TEXT,
+	domain TEXT,
+	FOREIGN KEY (value_id) REFERENCES values(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	time_horizon TEXT, -- Short, Medium, or Long
+	summary TEXT,
+	reward TEXT,
+	next_steps TEXT,
+	specific TEXT,
+	measurable TEXT,
+	action_oriented TEXT,
+	risky TEXT,
+	time_oriented TEXT,
+	exciting TEXT,
+	relevant TEXT,
+);
+
+CREATE TABLE IF NOT EXISTS goal_blockers (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	FOREIGN KEY (user_id) REFERENCES users(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	FOREIGN KEY (goal_id) REFERENCES goals(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	if TEXT,
+	then TEXT
+);
+
+CREATE TABLE IF NOT EXISTS goal_motivation (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	FOREIGN KEY (user_id) REFERENCES users(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	FOREIGN KEY (goal_id) REFERENCES goals(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	rank INTEGER,
+	motivation TEXT
+);
+
+CREATE TABLE IF NOT EXISTS goal_blockers (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	FOREIGN KEY (user_id) REFERENCES users(id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	title TEXT,
+	content TEXT,
+);
