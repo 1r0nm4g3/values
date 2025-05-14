@@ -1,7 +1,7 @@
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
 import { Button } from "~/components/ui/button"
-import { ValuePrompts } from "~/values/prompts"
+import { ValuePrompts } from "~/features/values/components/prompts";
 
 export function Welcome() {
   return (
