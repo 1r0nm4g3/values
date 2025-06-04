@@ -21,7 +21,13 @@ export function useDebounce<T extends (...args: any[]) => void>(
   );
 
   /* clear timer on unmount */
-  useEffect(() => () => timer.current && clearTimeout(timer.current), []);
+  useEffect(() => {
+    return () => {
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+    };
+  }, []);
 
   return debounced;
 }
