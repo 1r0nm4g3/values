@@ -102,6 +102,7 @@ export function ValueBins() {
         copy[binIndex].push(value);
         return copy;
       });
+      console.log(`${value}: ${binIndex + 1}`);
       if (el) {
         el.style.transition = "none";
         el.style.transform = "translate(0,0)";
@@ -114,12 +115,42 @@ export function ValueBins() {
     handleSelect(i);
   }
 
+  const progress = (index / VALUES.length) * 100;
+
   if (!value) {
-    return <div className="text-center py-10">All done!</div>;
+    return (
+      <div className="p-4 space-y-8">
+        <div className="h-2 w-full bg-gray-200 rounded">
+          <div
+            className="h-full bg-blue-500 rounded transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <div className="text-center py-10">All done!</div>
+      </div>
+    );
   }
 
   return (
     <div className="p-4 space-y-8">
+      <div className="h-2 w-full bg-gray-200 rounded">
+        <div
+          className="h-full bg-blue-500 rounded transition-all"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+      <div className="relative h-40 flex items-center justify-center">
+        <div
+          ref={cardRef}
+          draggable
+          onDragStart={(e) => e.dataTransfer.setData("text/plain", value)}
+          className={cn(
+            "p-4 bg-white rounded shadow transition-transform duration-300"
+          )}
+        >
+          {value}
+        </div>
+      </div>
       <div className="grid grid-cols-4 gap-4">
         {[0, 1, 2, 3].map((i) => (
           <div key={i} className="flex flex-col items-center">
@@ -136,18 +167,6 @@ export function ValueBins() {
             </div>
           </div>
         ))}
-      </div>
-      <div className="relative h-40">
-        <div
-          ref={cardRef}
-          draggable
-          onDragStart={(e) => e.dataTransfer.setData("text/plain", value)}
-          className={cn(
-            "absolute left-1/2 -translate-x-1/2 p-4 bg-white rounded shadow transition-transform duration-300"
-          )}
-        >
-          {value}
-        </div>
       </div>
     </div>
   );
