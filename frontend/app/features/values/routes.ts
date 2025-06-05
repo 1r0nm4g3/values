@@ -1,7 +1,8 @@
-import { prefix, index } from "@react-router/dev/routes";
+import { prefix, index, route } from "@react-router/dev/routes";
 
 export const valuesRoutes =
-	prefix("values", [
-		index("features/values/pages/prompts.tsx"),
-	])
+        prefix("values", [
+                index("features/values/pages/prompts.tsx"),
+                route("bins", "features/values/pages/bins.tsx"),
+        ])
 
