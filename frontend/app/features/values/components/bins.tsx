@@ -119,39 +119,43 @@ export function ValueBins() {
 
   if (!value) {
     return (
-      <div className="p-4 space-y-8">
+      <div className="min-h-screen flex flex-col bg-slate-100 p-4">
         <div className="h-2 w-full bg-gray-200 rounded">
           <div
             className="h-full bg-blue-500 rounded transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <div className="text-center py-10">All done!</div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center py-10">All done!</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-4 space-y-8">
-      <div className="h-2 w-full bg-gray-200 rounded">
-        <div
-          className="h-full bg-blue-500 rounded transition-all"
-          style={{ width: `${progress}%` }}
-        />
+    <div className="min-h-screen flex flex-col bg-slate-100">
+      <div className="p-4">
+        <div className="h-2 w-full bg-gray-200 rounded">
+          <div
+            className="h-full bg-blue-500 rounded transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </div>
-      <div className="relative h-40 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center">
         <div
           ref={cardRef}
           draggable
           onDragStart={(e) => e.dataTransfer.setData("text/plain", value)}
           className={cn(
-            "p-4 bg-white rounded shadow transition-transform duration-300"
+            "p-6 bg-slate-50 rounded-xl shadow-lg text-2xl font-semibold transition-transform duration-300"
           )}
         >
           {value}
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="p-4 grid grid-cols-4 gap-4">
         {[0, 1, 2, 3].map((i) => (
           <div key={i} className="flex flex-col items-center">
             <div className="font-bold mb-2">{i + 1}</div>
@@ -161,7 +165,7 @@ export function ValueBins() {
               }}
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => handleDrop(i)}
-              className="h-24 w-full border-2 border-dashed rounded flex items-center justify-center"
+              className="h-32 w-full border-2 border-dashed border-slate-400 rounded flex items-center justify-center bg-slate-200/50"
             >
               {bins[i].length}
             </div>
