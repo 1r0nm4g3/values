@@ -32,11 +32,12 @@ export function ValueClusters() {
   }
 
   function handleDropCluster(index: number, e: DragEvent) {
+    e.preventDefault();
     e.stopPropagation();
     if (!dragValue) return;
     removeFromAll(dragValue);
     setClusters((cs) => {
-      const copy = [...cs];
+      const copy = cs.map((c) => ({ ...c, values: [...c.values] }));
       copy[index].values.push(dragValue);
       return copy;
     });
@@ -45,6 +46,12 @@ export function ValueClusters() {
 
   function handleDropNewCluster() {
     if (!dragValue) return;
+    const limitReached =
+      clusters.length >= 7 && !clusters.some((c) => c.values.length === 0);
+    if (limitReached) {
+      setDragValue(null);
+      return;
+    }
     removeFromAll(dragValue);
     setClusters((cs) => {
       const empty = cs.find((c) => c.values.length === 0);
@@ -53,7 +60,6 @@ export function ValueClusters() {
           c.id === empty.id ? { ...c, values: [dragValue!] } : c
         );
       }
-      if (cs.length >= 7) return cs;
       return [...cs, { id: Date.now(), name: "", values: [dragValue!] }];
     });
     setDragValue(null);
