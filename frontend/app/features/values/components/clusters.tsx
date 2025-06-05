@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { DragEvent } from "react";
+import { useState } from "react"
+import type { DragEvent, TouchEvent } from "react"
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { VALUES_LIST } from "../data";
@@ -13,13 +13,42 @@ interface Cluster {
 export function ValueClusters() {
   // take first 15 values for demo
   const initial = VALUES_LIST.slice(0, 15);
-  const [unclustered, setUnclustered] = useState(initial);
-  const [clusters, setClusters] = useState<Cluster[]>([]);
-  const [discarded, setDiscarded] = useState<string[]>([]);
-  const [dragValue, setDragValue] = useState<string | null>(null);
+  const [unclustered, setUnclustered] = useState(initial)
+  const [clusters, setClusters] = useState<Cluster[]>([])
+  const [discarded, setDiscarded] = useState<string[]>([])
+  const [dragValue, setDragValue] = useState<string | null>(null)
+
+  function resetBoard() {
+    setUnclustered(initial)
+    setClusters([])
+    setDiscarded([])
+    setDragValue(null)
+  }
 
   function handleDragStart(v: string) {
-    setDragValue(v);
+    setDragValue(v)
+  }
+
+  function handleTouchEnd(e: TouchEvent) {
+    if (!dragValue) return
+    const t = e.changedTouches[0]
+    const target = document.elementFromPoint(t.clientX, t.clientY)
+    if (!target) {
+      setDragValue(null)
+      return
+    }
+    const clusterEl = target.closest<HTMLElement>("[data-drop-cluster]")
+    const newEl = target.closest<HTMLElement>("[data-drop-new-cluster]")
+    const trashEl = target.closest<HTMLElement>("[data-drop-trash]")
+    if (trashEl) {
+      handleDropTrash()
+    } else if (clusterEl) {
+      const idx = Number(clusterEl.getAttribute("data-drop-cluster"))
+      handleDropCluster(idx, e as unknown as DragEvent)
+    } else if (newEl) {
+      handleDropNewCluster()
+    }
+    setDragValue(null)
   }
 
   function removeFromAll(v: string) {
@@ -79,19 +108,22 @@ export function ValueClusters() {
     setUnclustered((u) => [v, ...u]);
   }
 
-  const completed =
-    clusters.length >= 5 && clusters.length <= 7 && unclustered.length === 0;
+  const clustersValid = clusters.length >= 4 && clusters.length <= 7
+  const allNamed = clusters.every((c) => c.name.trim().length > 0)
+  const completed = clustersValid && allNamed && unclustered.length === 0
+  const invalidClusterCount = !clustersValid
 
   return (
-    <div className="min-h-screen p-4 flex flex-col gap-4">
-      <header className="flex items-center justify-between">
-        <div className="font-semibold">
-          Clusters: {clusters.length} / 7
+    <div className="min-h-dvh md:min-h-screen p-4 flex flex-col gap-4">
+      <header className="flex items-center justify-between gap-4">
+        <div className="font-semibold">Clusters: {clusters.length} / 7</div>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={resetBoard}>Refresh</Button>
+          <Button disabled={!completed}>Next</Button>
         </div>
-        <Button disabled={!completed}>Next</Button>
       </header>
-      <div className="flex-1 grid grid-cols-5 gap-4">
-        <section className="col-span-1 flex flex-col gap-2">
+      <div className="flex-1 grid grid-cols-1 sm:grid-cols-5 gap-4 overflow-y-auto">
+        <section className="col-span-1 flex flex-col gap-2 overflow-auto">
           <h2 className="font-medium">Values</h2>
           <div className="flex flex-col gap-2">
             {unclustered.map((v) => (
@@ -99,6 +131,8 @@ export function ValueClusters() {
                 key={v}
                 draggable
                 onDragStart={() => handleDragStart(v)}
+                onTouchStart={() => handleDragStart(v)}
+                onTouchEnd={handleTouchEnd}
                 className="w-[120px] h-[60px] bg-slate-50 rounded-md shadow flex items-center justify-center cursor-move"
               >
                 {v}
@@ -106,13 +140,20 @@ export function ValueClusters() {
             ))}
           </div>
         </section>
-        <section className="col-span-3 flex flex-wrap gap-4 border rounded-md p-4 min-h-[300px]"
+        <section
+          data-drop-new-cluster
+          className={`col-span-3 flex flex-wrap gap-4 border rounded-md p-4 min-h-[300px] relative overflow-auto group ${invalidClusterCount ? 'border-red-400 hover:bg-red-50' : ''}`}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDropNewCluster}
         >
+          {invalidClusterCount && (
+            <div className="absolute left-1/2 -translate-x-1/2 -top-5 text-xs text-red-600 hidden group-hover:block">
+              Must have between 4 and 7 clusters
+            </div>
+          )}
           {clusters.map((cluster, i) => (
             <div
-              key={cluster.id}
+              key={cluster.id} data-drop-cluster={i}
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => handleDropCluster(i, e)}
               className="min-w-[150px] p-2 bg-slate-100 rounded-md flex flex-col gap-2"
@@ -134,6 +175,8 @@ export function ValueClusters() {
                   key={v}
                   draggable
                   onDragStart={() => handleDragStart(v)}
+                  onTouchStart={() => handleDragStart(v)}
+                  onTouchEnd={handleTouchEnd}
                   className="w-[120px] h-[60px] bg-white rounded shadow text-sm flex items-center justify-center cursor-move"
                 >
                   {v}
@@ -143,11 +186,15 @@ export function ValueClusters() {
           ))}
         </section>
         <section
+          data-drop-trash
           className="col-span-1 flex flex-col items-center gap-2"
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDropTrash}
+          onTouchEnd={handleTouchEnd}
         >
-          <div className="w-[96px] h-[96px] bg-red-100 rounded flex items-center justify-center">
+          <div
+            className={`w-[120px] h-[120px] bg-red-100 rounded flex items-center justify-center transition-all duration-300 sm:opacity-100 sm:translate-y-0 ${dragValue ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none sm:pointer-events-auto'}`}
+          >
             Trash
           </div>
           {discarded.length > 0 && (
