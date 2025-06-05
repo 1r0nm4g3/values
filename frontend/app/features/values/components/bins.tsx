@@ -59,6 +59,7 @@ export function ValueBins() {
   const cardRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const [bins, setBins] = useState<string[][]>([[], [], [], []]);
+  const [animating, setAnimating] = useState(false);
   const value = VALUES[index];
 
   useEffect(() => {
@@ -70,7 +71,7 @@ export function ValueBins() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [index]);
+  }, [index, animating]);
 
   useEffect(() => {
     const el = cardRef.current;
@@ -80,10 +81,15 @@ export function ValueBins() {
         el.style.transition = "opacity 300ms";
         el.style.opacity = "1";
       });
+      // allow next interaction after fade-in completes
+      const timer = setTimeout(() => setAnimating(false), 300);
+      return () => clearTimeout(timer);
     }
   }, [index]);
 
   function handleSelect(binIndex: number) {
+    if (animating) return;
+    setAnimating(true);
     const el = cardRef.current;
     const bin = binRefs.current[binIndex];
     if (!el || !bin || !value) return;
