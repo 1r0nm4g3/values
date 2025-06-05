@@ -114,15 +114,22 @@ export function ValueClusters() {
   const invalidClusterCount = !clustersValid
 
   return (
-    <div className="min-h-dvh md:min-h-screen p-4 flex flex-col gap-4">
+    <div className="h-dvh md:h-screen p-4 flex flex-col gap-4 overflow-hidden">
       <header className="flex items-center justify-between gap-4">
-        <div className="font-semibold">Clusters: {clusters.length} / 7</div>
+        <div className={`font-semibold relative group ${invalidClusterCount ? 'text-red-600' : ''}`}> 
+          Clusters: {clusters.length} / 7
+          {invalidClusterCount && (
+            <div className="absolute left-1/2 -translate-x-1/2 -bottom-5 text-xs hidden group-hover:block">
+              Must have between 4 and 7 clusters
+            </div>
+          )}
+        </div>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={resetBoard}>Refresh</Button>
           <Button disabled={!completed}>Next</Button>
         </div>
       </header>
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-5 gap-4 overflow-y-auto">
+      <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-5 gap-4 overflow-y-auto">
         <section className="col-span-1 flex flex-col gap-2 overflow-auto">
           <h2 className="font-medium">Values</h2>
           <div className="flex flex-col gap-2">
@@ -142,15 +149,10 @@ export function ValueClusters() {
         </section>
         <section
           data-drop-new-cluster
-          className={`col-span-3 flex flex-wrap gap-4 border rounded-md p-4 min-h-[300px] relative overflow-auto group ${invalidClusterCount ? 'border-red-400 hover:bg-red-50' : ''}`}
+          className="col-span-3 flex flex-wrap gap-4 border rounded-md p-4 min-h-[240px] relative overflow-auto"
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDropNewCluster}
         >
-          {invalidClusterCount && (
-            <div className="absolute left-1/2 -translate-x-1/2 -top-5 text-xs text-red-600 hidden group-hover:block">
-              Must have between 4 and 7 clusters
-            </div>
-          )}
           {clusters.map((cluster, i) => (
             <div
               key={cluster.id} data-drop-cluster={i}
