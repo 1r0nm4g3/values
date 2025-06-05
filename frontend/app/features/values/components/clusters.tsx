@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { DragEvent } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { VALUES_LIST } from "../data";
@@ -24,11 +25,14 @@ export function ValueClusters() {
   function removeFromAll(v: string) {
     setUnclustered((u) => u.filter((x) => x !== v));
     setClusters((cs) =>
-      cs.map((c) => ({ ...c, values: c.values.filter((x) => x !== v) }))
+      cs
+        .map((c) => ({ ...c, values: c.values.filter((x) => x !== v) }))
+        .filter((c) => c.values.length > 0)
     );
   }
 
-  function handleDropCluster(index: number) {
+  function handleDropCluster(index: number, e: DragEvent) {
+    e.stopPropagation();
     if (!dragValue) return;
     removeFromAll(dragValue);
     setClusters((cs) => {
@@ -42,10 +46,16 @@ export function ValueClusters() {
   function handleDropNewCluster() {
     if (!dragValue) return;
     removeFromAll(dragValue);
-    setClusters((cs) => [
-      ...cs,
-      { id: Date.now(), name: "", values: [dragValue] },
-    ]);
+    setClusters((cs) => {
+      const empty = cs.find((c) => c.values.length === 0);
+      if (empty) {
+        return cs.map((c) =>
+          c.id === empty.id ? { ...c, values: [dragValue!] } : c
+        );
+      }
+      if (cs.length >= 7) return cs;
+      return [...cs, { id: Date.now(), name: "", values: [dragValue!] }];
+    });
     setDragValue(null);
   }
 
@@ -98,7 +108,7 @@ export function ValueClusters() {
             <div
               key={cluster.id}
               onDragOver={(e) => e.preventDefault()}
-              onDrop={() => handleDropCluster(i)}
+              onDrop={(e) => handleDropCluster(i, e)}
               className="min-w-[150px] p-2 bg-slate-100 rounded-md flex flex-col gap-2"
             >
               <Input
