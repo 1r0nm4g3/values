@@ -5,6 +5,7 @@ services:
     volumes:
       - ./backend:/app
     command: php -S 0.0.0.0:8000 -t .
+    restart: always
     expose:
       - "8000"
 
@@ -18,6 +19,7 @@ services:
 
   nginx:
     image: nginx:alpine
+    restart: always
     depends_on:
       - backend
       - frontend
