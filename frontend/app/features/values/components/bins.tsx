@@ -1,58 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "~/lib/utils";
-
-const VALUES = [
-  "Achievement",
-  "Adventure",
-  "Authenticity",
-  "Balance",
-  "Compassion",
-  "Contribution",
-  "Creativity",
-  "Curiosity",
-  "Empathy",
-  "Faith",
-  "Family",
-  "Freedom",
-  "Friendship",
-  "Growth",
-  "Health",
-  "Honesty",
-  "Humor",
-  "Independence",
-  "Innovation",
-  "Integrity",
-  "Justice",
-  "Leadership",
-  "Learning",
-  "Love",
-  "Loyalty",
-  "Open-mindedness",
-  "Optimism",
-  "Passion",
-  "Patience",
-  "Peace",
-  "Perseverance",
-  "Positivity",
-  "Quality",
-  "Reliability",
-  "Respect",
-  "Responsibility",
-  "Security",
-  "Service",
-  "Simplicity",
-  "Spirituality",
-  "Success",
-  "Sustainability",
-  "Teamwork",
-  "Tradition",
-  "Trustworthiness",
-  "Wealth",
-  "Wellness",
-  "Wisdom",
-  "Vision",
-  "Joy"
-];
+import { VALUES_LIST } from "../data";
 
 export function ValueBins() {
   const binRefs = useRef<HTMLDivElement[]>([]);
@@ -60,7 +8,7 @@ export function ValueBins() {
   const [index, setIndex] = useState(0);
   const [bins, setBins] = useState<string[][]>([[], [], [], []]);
   const [animating, setAnimating] = useState(false);
-  const value = VALUES[index];
+  const value = VALUES_LIST[index];
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -121,7 +69,7 @@ export function ValueBins() {
     handleSelect(i);
   }
 
-  const progress = (index / VALUES.length) * 100;
+  const progress = (index / VALUES_LIST.length) * 100;
 
   if (!value) {
     return (
