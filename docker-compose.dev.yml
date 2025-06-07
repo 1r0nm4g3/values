@@ -1,11 +1,10 @@
-version: '3.8'
 services:
   backend:
     image: php:8.1-cli
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: php -S 0.0.0.0:8000 -t public
+    command: php -S 0.0.0.0:8000 -t .
     ports:
       - "8000:8000"
   frontend:
