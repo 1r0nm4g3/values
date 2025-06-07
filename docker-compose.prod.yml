@@ -1,29 +1,30 @@
-version: '3.8'
 services:
   backend:
     image: php:8.1-cli
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: php -S 0.0.0.0:8000 -t public
+    command: php -S 0.0.0.0:8000 -t .
     expose:
       - "8000"
 
-  frontend-build:
-    image: node:20
+  frontend:
+    build: ./frontend
     working_dir: /app
-    volumes:
-      - ./frontend:/app
-    command: sh -c "npm install && npm run build"
+    environment:
+      - PORT=3000
+    expose:
+      - "3000"
 
   nginx:
     image: nginx:alpine
     depends_on:
       - backend
-      - frontend-build
+      - frontend
     volumes:
-      - ./frontend/build/client:/usr/share/nginx/html:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/ssl/certs/river.pem:/etc/ssl/certs/river.pem:ro
+      - /etc/ssl/certs/river.key:/etc/ssl/certs/river.key:ro
     ports:
       - "80:80"
-
+      - "443:443"
