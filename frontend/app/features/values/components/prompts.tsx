@@ -47,7 +47,7 @@ export function ValuePrompts() {
         <MarkdownEditorField
           name="q3"
           control={form.control}
-          label="3. What are some recurring situations in your life? What values cause these?"
+          label="3. What are some recurring situations in your life? What values do you think cause these?"
         />
 
         <Button type="submit">Submit</Button>
