@@ -7,7 +7,7 @@ Nginx configuration in `./nginx`.
 
 ## Development
 - To spin up the entire stack locally, run `docker compose -f docker-compose.dev.yml up`.
-- The front end runs at `http://localhost:5173` and the back end at `http://localhost:8000`.
+- The front end runs at `http://localhost:5173` and the back end at `http://localhost:8001`.
 - The production stack is defined in `docker-compose.prod.yml` and uses Nginx.
 
 ## Conventions

@@ -4,10 +4,10 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: php -S 0.0.0.0:8000 -t .
+    command: php -S 0.0.0.0:8001 -t .
     restart: always
     expose:
-      - "8000"
+      - "8001"
 
   frontend:
     build: ./frontend

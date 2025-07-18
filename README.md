@@ -22,7 +22,7 @@ Compose.
    docker compose -f docker-compose.dev.yml up
    ```
    The frontend will be available at `http://localhost:5173` and the backend at
-   `http://localhost:8000`.
+   `http://localhost:8001`.
 
 The `frontend` directory includes its own [README](frontend/README.md) with
 more details about building and deploying the React application.
