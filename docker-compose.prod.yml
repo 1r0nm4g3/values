@@ -1,13 +1,26 @@
 services:
+  db:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: values_db
+      MYSQL_USER: app
+      MYSQL_PASSWORD: secret
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+
   backend:
-    image: php:8.1-cli
+    image: php:8.2-cli
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: php -S 0.0.0.0:8001 -t .
-    restart: always
+    command: php -S 0.0.0.0:8080 -t public
     expose:
-      - "8001"
+      - "8080"
+    depends_on:
+      - db
+    restart: always
 
   frontend:
     build: ./frontend
@@ -30,3 +43,5 @@ services:
     ports:
       - "80:80"
       - "443:443"
+volumes:
+  db_data:
