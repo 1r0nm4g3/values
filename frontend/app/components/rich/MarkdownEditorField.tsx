@@ -93,7 +93,7 @@ export const MarkdownEditorField = ({
             <div className="rounded border border-slate-200">
               <MDXEditor
                 ref={editorRef}
-                markdown=""
+                markdown={field.value}
                 onChange={debouncedSave}
                 onBlur={() => {
                   field.onBlur();
