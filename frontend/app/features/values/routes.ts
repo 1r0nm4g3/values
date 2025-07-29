@@ -5,5 +5,6 @@ export const valuesRoutes =
                 index("features/values/pages/prompts.tsx"),
                 route("bins", "features/values/pages/bins.tsx"),
                 route("clusters", "features/values/pages/clusters.tsx"),
+                route("refine", "features/values/pages/refine.tsx"),
         ])
 
