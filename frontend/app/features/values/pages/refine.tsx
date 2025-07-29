@@ -32,7 +32,19 @@ function ValueRefinePrompts({ onSubmit }: ValueRefinePromptsProps) {
     resolver: zodResolver(ValueRefinementQuestions),
     defaultValues: {
       name: "",
-      q1: "**Define this value in your own words.**\n\n\n**What are some examples of this value from your life?**\n\n\n**What are the costs of ignoring this value?**\n\n\n**What are some behaviors that would exhibit this value?**\n\n\n",
+      q1: `**Define this value in your own words.**<br /><br />\n\n
+**What are some examples of this value from your life?**<br /><br />
+
+
+
+**What are the costs of ignoring this value?**
+
+
+
+**What are some behaviors that would exhibit this value?**
+
+
+`,
     },
   })
 
