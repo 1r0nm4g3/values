@@ -6,6 +6,7 @@ import { z } from "zod"
 import { MarkdownEditorField } from "~/components/rich/MarkdownEditorField"
 
 import { Button } from "~/components/ui/button"
+import { submitRefinement } from "../api";
 import { Input } from "~/components/ui/input"
 import {
   Form,
@@ -96,13 +97,13 @@ export default function RefineCluster() {
   const [index, setIndex] = useState(0)
   const [answers, setAnswers] = useState<(ValueRefineAnswers & { cluster: number })[]>([])
 
-  function handleNext(a: ValueRefineAnswers) {
+  async function handleNext(a: ValueRefineAnswers) {
     const entry = { ...a, cluster: index }
     setAnswers((prev) => [...prev, entry])
+    await submitRefinement(entry)
     if (index < clusters.length - 1) {
       setIndex((i) => i + 1)
     } else {
-      console.log("All done", [...answers, entry])
     }
   }
 
