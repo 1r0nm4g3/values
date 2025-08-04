@@ -16,7 +16,12 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: /bin/sh -c "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && composer install && php -S 0.0.0.0:8080 -t public"
+    command: >-
+      /bin/sh -c "apt-get update
+      && apt-get install -y git unzip curl
+      && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+      && composer install
+      && php -S 0.0.0.0:8080 -t public"
     ports:
       - "8080:8080"
     depends_on:
