@@ -3,6 +3,7 @@ import type { DragEvent, TouchEvent } from "react"
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { VALUES_LIST } from "../data";
+import { submitClusters } from "../api";
 
 interface Cluster {
   id: number;
@@ -108,6 +109,11 @@ export function ValueClusters() {
     setUnclustered((u) => [v, ...u]);
   }
 
+  async function handleNextClick() {
+    if (!completed) return
+    await submitClusters(clusters.map(c => ({ name: c.name, values: c.values })))
+  }
+
   const clustersValid = clusters.length >= 4 && clusters.length <= 7
   const allNamed = clusters.every((c) => c.name.trim().length > 0)
   const completed = clustersValid && allNamed && unclustered.length === 0
@@ -126,7 +132,7 @@ export function ValueClusters() {
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={resetBoard}>Refresh</Button>
-          <Button disabled={!completed}>Next</Button>
+          <Button disabled={!completed} onClick={handleNextClick}>Next</Button>
         </div>
       </header>
       <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-5 gap-4 overflow-y-auto">
