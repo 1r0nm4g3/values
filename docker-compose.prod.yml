@@ -17,7 +17,9 @@ services:
       - ./backend:/app
     command: >-
       /bin/sh -c "apt-get update
-      && apt-get install -y git unzip curl
+      && apt-get install -y git unzip zip libzip-dev curl
+      && docker-php-ext-configure zip
+      && docker-php-ext-install zip pdo_mysql
       && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
       && composer install
       && php -S 0.0.0.0:8080 -t public"
