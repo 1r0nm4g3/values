@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -9,6 +10,11 @@ import {
   Form,
 } from "~/components/ui/form"
 
+interface Prompt {
+  id: number
+  prompt: string
+}
+
 const ValueQuestionSchema = z.object({
   q1: z.string().min(1, "Required"),
   q2: z.string().min(1, "Required"),
@@ -17,7 +23,18 @@ const ValueQuestionSchema = z.object({
 
 type ValueQuestionAnswers = z.infer<typeof ValueQuestionSchema>
 
+const API_BASE = "http://localhost:8001"
+
 export function ValuePrompts() {
+  const [prompts, setPrompts] = useState<Prompt[]>([])
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/v1/journal/prompts`)
+      .then((res) => res.json())
+      .then(setPrompts)
+      .catch(() => {})
+  }, [])
+
   const form = useForm<ValueQuestionAnswers>({
     resolver: zodResolver(ValueQuestionSchema),
     defaultValues: {
@@ -28,30 +45,31 @@ export function ValuePrompts() {
   })
 
   function onSubmit(answers: ValueQuestionAnswers) {
-    console.log(answers)
+    prompts.forEach((p, index) => {
+      const key = `q${index + 1}` as keyof ValueQuestionAnswers
+      const response = answers[key]
+      fetch(`${API_BASE}/api/v1/journal/prompt/${p.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ response }),
+      })
+    })
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-7xl">
-        <MarkdownEditorField
-          name="q1"
-          control={form.control}
-          label="1. What is a very powerful memory from your past. How has it impacted you and what values were displayed?"
-        />
-        <MarkdownEditorField
-          name="q2"
-          control={form.control}
-          label="2. Think about someone you look up to and admire. Why? What values does this person emanate?"
-        />
-        <MarkdownEditorField
-          name="q3"
-          control={form.control}
-          label="3. What are some recurring situations in your life? What values do you think cause these?"
-        />
+        {prompts.map((p, index) => (
+          <MarkdownEditorField
+            key={p.id}
+            name={`q${index + 1}` as const}
+            control={form.control}
+            label={`${index + 1}. ${p.prompt}`}
+          />
+        ))}
 
         <Button type="submit">Submit</Button>
       </form>
-    </Form >
+    </Form>
   )
 }
