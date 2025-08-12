@@ -1,12 +1,39 @@
 services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: values
+      MYSQL_USER: values
+      MYSQL_PASSWORD: values
+    volumes:
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "3306:3306"
+
   backend:
-    image: php:8.1-cli
+    build: ./backend
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: php -S 0.0.0.0:8001 -t .
+    environment:
+      DB_DSN: mysql:host=db;port=3306;dbname=values;charset=utf8mb4
+      DB_USER: values
+      DB_PASS: values
+    depends_on:
+      - db
+    expose:
+      - "8001"
+
+  nginx:
+    image: nginx:alpine
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/dev.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
-      - "8001:8001"
+      - "8001:80"
+
   frontend:
     image: node:20
     working_dir: /app

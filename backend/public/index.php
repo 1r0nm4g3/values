@@ -8,7 +8,7 @@ use Dotenv\Dotenv;
 require __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+$dotenv->safeLoad();
 
 $settings = require __DIR__ . '/../config/settings.php';
 
