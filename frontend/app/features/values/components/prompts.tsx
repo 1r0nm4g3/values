@@ -5,6 +5,7 @@ import { z } from "zod"
 import { MarkdownEditorField } from "~/components/rich/MarkdownEditorField"
 
 import { Button } from "~/components/ui/button"
+import { submitPrompts } from "../api";
 import {
   Form,
 } from "~/components/ui/form"
@@ -27,8 +28,8 @@ export function ValuePrompts() {
     },
   })
 
-  function onSubmit(answers: ValueQuestionAnswers) {
-    console.log(answers)
+  async function onSubmit(answers: ValueQuestionAnswers) {
+    await submitPrompts(answers)
   }
 
   return (

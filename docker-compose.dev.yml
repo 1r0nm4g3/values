@@ -1,12 +1,33 @@
 services:
+  db:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: values_db
+      MYSQL_USER: app
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
   backend:
-    image: php:8.1-cli
+    image: php:8.2-cli
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: php -S 0.0.0.0:8001 -t .
+    command: >-
+      /bin/sh -c "apt-get update
+      && apt-get install -y git unzip zip libzip-dev curl
+      && docker-php-ext-configure zip
+      && docker-php-ext-install zip pdo_mysql
+      && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+      && composer install
+      && php -S 0.0.0.0:8080 -t public"
     ports:
-      - "8001:8001"
+      - "8080:8080"
+    depends_on:
+      - db
   frontend:
     image: node:20
     working_dir: /app
@@ -17,3 +38,5 @@ services:
     ports:
       - "5173:5173"
 
+volumes:
+  db_data:

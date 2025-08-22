@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "~/lib/utils";
 import { VALUES_LIST } from "../data";
+import { submitBins } from "../api";
 
 export function ValueBins() {
   const binRefs = useRef<HTMLDivElement[]>([]);
@@ -56,7 +57,6 @@ export function ValueBins() {
         copy[binIndex].push(value);
         return copy;
       });
-      console.log(`${value}: ${binIndex + 1}`);
       if (el) {
         el.style.transition = "none";
         el.style.transform = "translate(0,0)";
@@ -70,6 +70,13 @@ export function ValueBins() {
   }
 
   const progress = (index / VALUES_LIST.length) * 100;
+
+  useEffect(() => {
+    if (!value) {
+      const items = bins.flatMap((b, i) => b.map(v => ({ value: v, bin: i + 1 })))
+      submitBins(items)
+    }
+  }, [value])
 
   if (!value) {
     return (
